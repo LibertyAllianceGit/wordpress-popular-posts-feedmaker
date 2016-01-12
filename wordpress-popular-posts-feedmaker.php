@@ -148,7 +148,6 @@ function wpprss_settings_section_callback() {
     echo '<a href="' . get_bloginfo('url') . '/feed/popular/" target="_blank">' . get_bloginfo('url') . '/feed/popular/' . '</a>.';
 }
 
-
 function wpprss_options_page() { 
 	?>
 <div class="wpp-rss-admin-page">
@@ -194,6 +193,20 @@ function wpprss_options_page() {
 </div>
 	<?php
 }
+
+
+/**********
+Options Loaded
+**********/
+
+// Get Options
+$wpprssoptions = get_option( 'wpprss_settings' );
+
+// Assign Options to Variables
+$wpprsslimit        = $wpprssoptions['wpprss_text_limit_field'];
+$wpprssrange        = $wpprssoptions['wpprss_select_range_field'];
+$wpprssfreshness    = $wpprssoptions['wpprss_select_freshness_field'];
+$wpprssorderby      = $wpprssoptions['wpprss_select_orderby_field'];
 
 
 /**********
