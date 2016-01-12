@@ -1,0 +1,57 @@
+.wpp-rss-admin-page h3 {
+    color: #C53034;
+    margin-bottom: 0.1rem;
+}
+
+.wpp-rss-admin-page .form-table, .wpp-rss-admin-section {
+    background: #fff;
+    padding: 1rem;
+    margin: 1.5rem 0;
+    display: block;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
+}
+
+.wpp-rss-admin-page .form-table tr th span {
+    color: #C53034;
+}
+
+.wpp-rss-admin-page .form-table tr th {
+    padding: 1rem 0rem;
+}
+
+.wpp-rss-admin-page .form-table tr th p {
+    margin: 0;
+    font-weight: normal;
+}
+
+.wpp-rss-admin-page form input#submit, .wpp-rss-admin-page a {
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    -o-transition: all 0.3s ease;
+    -ms-transition: all 0.3s ease;
+}
+
+.wpp-rss-admin-page form input#submit {
+    background: #B2292C;
+    font-weight: bold;
+    border: none;
+    box-shadow: none;
+}
+
+.wpp-rss-admin-page form input#submit:hover {
+    background: #D4383D;
+}
+
+.wpp-rss-admin-page a {
+    color: #B2292C;
+}
+
+.wpp-rss-admin-page a:hover {
+    color: #D4383D;
+}
+
+.wpp-rss-admin-section ul {
+    list-style: disc;
+    margin-left: 1rem;
+}
