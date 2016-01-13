@@ -28,6 +28,20 @@ $myUpdateChecker = new $className(
 
 
 /**********
+Refresh Permalinks on Plugin Activation
+**********/
+
+register_activation_hook( __FILE__, 'wpprss_activation_rewrite_permalinks' );
+
+function wpprss_activation_rewrite_permalinks() {
+    //Ensure the $wp_rewrite global is loaded
+    global $wp_rewrite;
+    //Call flush_rules() as a method of the $wp_rewrite object, so that permalinks are flushed
+    $wp_rewrite->flush_rules( false );
+}
+
+
+/**********
 WPP Feedmaker Options
 **********/
 
