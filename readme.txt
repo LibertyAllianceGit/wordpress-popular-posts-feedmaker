@@ -26,6 +26,9 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.3.0
+* Added Flush Rewrite rules on plugin activation. Helps create RSS feed.
+
 = 1.2.0
 * Setup options for options page.
 * Added readme.txt and readme.md.
