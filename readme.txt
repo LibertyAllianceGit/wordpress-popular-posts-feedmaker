@@ -26,6 +26,12 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.6.1
+* Tweaked template to remove "- Feed" from site title.
+
+= 1.6.0
+* Changed image size from thumbnail to full.
+
 = 1.5.0
 * Fix image output in feed.
 
