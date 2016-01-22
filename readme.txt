@@ -26,6 +26,12 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.5.0
+* Fix image output in feed.
+
+= 1.4.0
+* Fix menu clash with CR Widget plugin.
+
 = 1.3.0
 * Added Flush Rewrite rules on plugin activation. Helps create RSS feed.
 
