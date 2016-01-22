@@ -3,7 +3,7 @@
 Plugin Name: WordPress Popular Posts Feedmaker
 Plugin URI: http://wpdevelopers.com
 Description: Creates a popular feed at /feed/popular, which uses WordPress Popular Posts
-Version: 1.5.0
+Version: 1.6.0
 Author: Ted Slater & Tyler Johnson
 Author URI: http://libertyalliance.com
 Author Email: tyler@libertyalliance.com
@@ -273,7 +273,7 @@ function wpdev_wpp_rss_custom_html( $mostpopular, $instance ){
             $date = get_the_date('r', $popular->id);
             $author = get_the_author_meta( 'display_name', $popular->id );
             $wppexcerpt = wpdev_wpp_rss_get_excerpt_by_id( $popular->id ); // Excerpt placeholder
-            $image = wp_get_attachment_image_src(get_post_thumbnail_id( $popular->id ));
+            $image = wp_get_attachment_image_src(get_post_thumbnail_id( $popular->id ), 'full' );
 
             $output .= '<item>';
             $output .= '<title>' . $title . '</title>';
