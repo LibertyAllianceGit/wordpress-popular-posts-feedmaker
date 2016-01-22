@@ -3,7 +3,7 @@
 Plugin Name: WordPress Popular Posts Feedmaker
 Plugin URI: http://wpdevelopers.com
 Description: Creates a popular feed at /feed/popular, which uses WordPress Popular Posts
-Version: 1.3.0
+Version: 1.4.0
 Author: Ted Slater & Tyler Johnson
 Author URI: http://libertyalliance.com
 Author Email: tyler@libertyalliance.com
@@ -70,45 +70,45 @@ function wpprss_add_admin_menu() {
 
 
 function wpprss_settings_init() { 
-	register_setting( 'pluginPage', 'wpprss_settings' );
+	register_setting( 'wppFeedPage', 'wpprss_settings' );
 
 	add_settings_section(
-		'wpprss_pluginPage_section', 
+		'wpprss_wppFeedPage_section', 
 		__( 'RSS Feed Options', 'wpprss' ), 
 		'wpprss_settings_section_callback', 
-		'pluginPage'
+		'wppFeedPage'
 	);
 
 	add_settings_field( 
 		'wpprss_text_limit_field', 
 		__( '<span>Limit</span><p>Sets the maximum number of popular posts to be shown in the RSS feed.</p>', 'wpprss' ), 
 		'wpprss_text_limit_field_render', 
-		'pluginPage', 
-		'wpprss_pluginPage_section' 
+		'wppFeedPage', 
+		'wpprss_wppFeedPage_section' 
 	);
 
 	add_settings_field( 
 		'wpprss_select_range_field', 
 		__( '<span>Range</span><p>Tells WordPress Popular Posts to retrieve the most popular entries within the time range specified for the RSS feed.</p>', 'wpprss' ), 
 		'wpprss_select_range_field_render', 
-		'pluginPage', 
-		'wpprss_pluginPage_section' 
+		'wppFeedPage', 
+		'wpprss_wppFeedPage_section' 
 	);
 
 	add_settings_field( 
 		'wpprss_select_freshness_field', 
 		__( '<span>Freshness</span><p>Tells WordPress Popular Posts to retrieve the most popular entries published within the time range specified above.</p>', 'wpprss' ), 
 		'wpprss_select_freshness_field_render', 
-		'pluginPage', 
-		'wpprss_pluginPage_section' 
+		'wppFeedPage', 
+		'wpprss_wppFeedPage_section' 
 	);
 
 	add_settings_field( 
 		'wpprss_select_orderby_field', 
 		__( '<span>Order By</span><p>Sets the sorting option of the popular posts with the RSS feed.</p>', 'wpprss' ), 
 		'wpprss_select_orderby_field_render', 
-		'pluginPage', 
-		'wpprss_pluginPage_section' 
+		'wppFeedPage', 
+		'wpprss_wppFeedPage_section' 
 	);
 }
 
@@ -169,8 +169,8 @@ function wpprss_options_page() {
 		<h2><img src="<?php echo plugin_dir_url(__FILE__) . 'admin/wpp-rss-logo.png'; ?>" /></h2>
 		
 		<?php
-		settings_fields( 'pluginPage' );
-		do_settings_sections( 'pluginPage' );
+		settings_fields( 'wppFeedPage' );
+		do_settings_sections( 'wppFeedPage' );
 		submit_button();
 		?>
 	</form>
