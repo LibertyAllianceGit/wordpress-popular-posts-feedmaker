@@ -3,7 +3,7 @@
 Plugin Name: WordPress Popular Posts Feedmaker
 Plugin URI: http://wpdevelopers.com
 Description: Creates a popular feed at /feed/popular, which uses WordPress Popular Posts
-Version: 1.7.0
+Version: 1.7.1
 Author: Ted Slater & Tyler Johnson
 Author URI: http://libertyalliance.com
 Author Email: tyler@libertyalliance.com
@@ -305,15 +305,18 @@ function wpdev_wpp_rss_custom_html( $mostpopular, $instance ){
             $author = get_the_author_meta( 'display_name', $authid );
             $wppexcerpt = wpdev_wpp_rss_get_excerpt_by_id( $popular->id ); // Excerpt placeholder
             $image = wp_get_attachment_image_src(get_post_thumbnail_id( $popular->id ), 'full' );
+            $imagereplace = preg_replace('/-\d+[Xx]\d+\./', '.', $image[0]);
+            $pathinfo = pathinfo($image[0]);
 
             $output .= '<item>';
             $output .= '<title>' . $title . '</title>';
             $output .= '<link>' . $link . '</link>';
             $output .= '<pubDate>' . $date . '</pubDate>';
             $output .= '<dc:creator><![CDATA[' . $author . ']]></dc:creator>';
+            $output .= '<enclosure url="' . $imagereplace . '" type="image/' . $pathinfo['extension'] . '" />';
             $output .= '<guid isPermaLink=\'true\'>' . $link . '</guid>';
-            $output .= '<description><![CDATA[<img src="' . $image[0] . '" />' . $wppexcerpt . ']]></description>';
-            $output .= '<content:encoded><![CDATA[<img src="' . $image[0] . '" />' . $wppexcerpt . ']]></content:encoded>';
+            $output .= '<description><![CDATA[<img src="' . $imagereplace . '" />' . $wppexcerpt . ']]></description>';
+            $output .= '<content:encoded><![CDATA[<img src="' . $imagereplace . '" />' . $wppexcerpt . ']]></content:encoded>';
             $output .= '</item>';  
             
             //Wed, 02 Oct 2002 08:00:00 EST
