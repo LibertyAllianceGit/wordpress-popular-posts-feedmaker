@@ -3,7 +3,7 @@
 Plugin Name: WordPress Popular Posts Feedmaker
 Plugin URI: http://wpdevelopers.com
 Description: Creates a popular feed at /feed/popular, which uses WordPress Popular Posts
-Version: 1.6.1
+Version: 1.7.0
 Author: Ted Slater & Tyler Johnson
 Author URI: http://libertyalliance.com
 Author Email: tyler@libertyalliance.com
@@ -39,6 +39,36 @@ function wpprss_activation_rewrite_permalinks() {
     //Call flush_rules() as a method of the $wp_rewrite object, so that permalinks are flushed
     $wp_rewrite->flush_rules( false );
 }
+
+
+/**********
+Add Image Sizes for Patriot Times & Email Newsletters
+**********/
+
+// Add Thumbnail Theme Support
+add_theme_support( 'post-thumbnails' );
+
+// Add Patriot Times Sizes
+add_image_size( 'patriottimes-main', 250, 205, true );
+add_image_size( 'patriottimes-headline', 155, 110, true );
+add_image_size( 'patriottimes-email', 330, 175, true );
+
+// Fix Cropping for Small Images
+function wpdev_thumbnail_crop_fix_pt( $default, $orig_w, $orig_h, $new_w, $new_h, $crop ){
+    if ( !$crop ) return null; // let the wordpress default function handle this
+ 
+    $aspect_ratio = $orig_w / $orig_h;
+    $size_ratio = max($new_w / $orig_w, $new_h / $orig_h);
+ 
+    $crop_w = round($new_w / $size_ratio);
+    $crop_h = round($new_h / $size_ratio);
+ 
+    $s_x = floor( ($orig_w - $crop_w) / 2 );
+    $s_y = floor( ($orig_h - $crop_h) / 2 );
+ 
+    return array( 0, 0, (int) $s_x, (int) $s_y, (int) $new_w, (int) $new_h, (int) $crop_w, (int) $crop_h );
+}
+add_filter( 'image_resize_dimensions', 'wpdev_thumbnail_crop_fix_pt', 10, 6 );
 
 
 /**********
@@ -159,7 +189,7 @@ function wpprss_select_orderby_field_render() {
 
 function wpprss_settings_section_callback() { 
 	echo __( 'Settings for the most popular posts output within the custom RSS feed located at: ', 'wpprss' );
-    echo '<a href="' . get_bloginfo('url') . '/feed/popular/" target="_blank">' . get_bloginfo('url') . '/feed/popular/' . '</a>.';
+    echo '<a href="' . get_bloginfo('url') . '/feed/popular/" target="_blank">' . get_bloginfo('url') . '/feed/popular/' . '</a>. If feed displays 404, please save permalinks to refresh the link structure. You can refresh permalinks <a href="' . get_bloginfo('url') . '/wp-admin/options-permalink.php" target="_blank">HERE</a>.';
 }
 
 function wpprss_options_page() { 
@@ -270,8 +300,9 @@ function wpdev_wpp_rss_custom_html( $mostpopular, $instance ){
             
             $title = esc_attr( $popular->title );
             $link = get_the_permalink( $popular->id );
-            $date = get_the_date('r', $popular->id);
-            $author = get_the_author_meta( 'display_name', $popular->id );
+            $date = get_the_date( 'r', $popular->id );
+            $authid = get_post_field( 'post_author', $popular->id );
+            $author = get_the_author_meta( 'display_name', $authid );
             $wppexcerpt = wpdev_wpp_rss_get_excerpt_by_id( $popular->id ); // Excerpt placeholder
             $image = wp_get_attachment_image_src(get_post_thumbnail_id( $popular->id ), 'full' );
 
@@ -279,7 +310,7 @@ function wpdev_wpp_rss_custom_html( $mostpopular, $instance ){
             $output .= '<title>' . $title . '</title>';
             $output .= '<link>' . $link . '</link>';
             $output .= '<pubDate>' . $date . '</pubDate>';
-            $output .= '<dc:creator>' . $author . '</dc:creator>';
+            $output .= '<dc:creator><![CDATA[' . $author . ']]></dc:creator>';
             $output .= '<guid isPermaLink=\'true\'>' . $link . '</guid>';
             $output .= '<description><![CDATA[<img src="' . $image[0] . '" />' . $wppexcerpt . ']]></description>';
             $output .= '<content:encoded><![CDATA[<img src="' . $image[0] . '" />' . $wppexcerpt . ']]></content:encoded>';
@@ -312,6 +343,7 @@ function wpp_rss_function( $atts, $content = null ){
         'type' => 'reg',
 		'url' => '#',
 		'items' => '10',
+        'itemauthor' => 'false',
         'orderby' => 'default',
         'title' => 'true',
 		'excerpt' => '0',
@@ -452,6 +484,11 @@ function wpp_rss_function( $atts, $content = null ){
                                     }
                                     if ($date == 'true' && $time) {
                                         $output .= '<span class="post_item_date">' . sprintf( __( 'Published: %s', 'wpp-rss-retriever' ), $time ) . '</span>';
+                                    }
+                                    if ($itemauthor == 'true') {
+                                        $author = $item->get_author();
+                                        $authorname = ' | ' . $author->get_name();
+                                        $output .= $authorname;
                                     }
                                 $output .= '</div>';
                             }

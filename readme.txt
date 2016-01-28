@@ -26,6 +26,11 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.7.0
+* Added author output into RSS feed.
+* Added custom image sizes for  viewing on Patriot Times.
+* Fixed some descriptive text on options page.
+
 = 1.6.1
 * Tweaked template to remove "- Feed" from site title.
 
