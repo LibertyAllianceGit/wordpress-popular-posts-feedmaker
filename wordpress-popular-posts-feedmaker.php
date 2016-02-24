@@ -313,7 +313,7 @@ function wpdev_wpp_rss_custom_html( $mostpopular, $instance ){
             $output .= '<link>' . $link . '</link>';
             $output .= '<pubDate>' . $date . '</pubDate>';
             $output .= '<dc:creator><![CDATA[' . $author . ']]></dc:creator>';
-            $output .= '<enclosure url="' . $imagereplace . '" type="image/' . $pathinfo['extension'] . '" />';
+            $output .= '<enclosure url="' . $imagereplace . '" type="image/' . $pathinfo['extension'] . '" length="1" />';
             $output .= '<guid isPermaLink=\'true\'>' . $link . '</guid>';
             $output .= '<description><![CDATA[<img src="' . $imagereplace . '" />' . $wppexcerpt . ']]></description>';
             $output .= '<content:encoded><![CDATA[<img src="' . $imagereplace . '" />' . $wppexcerpt . ']]></content:encoded>';
