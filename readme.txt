@@ -26,6 +26,9 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.7.2
+* Add enclosure length tag for valid RSS feed.
+
 = 1.7.1
 * Image size tweak.
 * Check image for image size and strip.
