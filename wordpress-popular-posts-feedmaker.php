@@ -345,8 +345,10 @@ function wpp_rss_function( $atts, $content = null ){
 	extract( shortcode_atts( array(
         'type' => 'reg',
 		'url' => '#',
+        'offsetitems' => '0',
+        'linkcolor' => '#A60000',
+        'btncolor' => '#000000',
 		'items' => '10',
-        'itemauthor' => 'false',
         'orderby' => 'default',
         'title' => 'true',
 		'excerpt' => '0',
@@ -376,7 +378,7 @@ function wpp_rss_function( $atts, $content = null ){
             $rss->enable_order_by_date(true);
         }
         $maxitems = $rss->get_item_quantity( $items ); 
-        $rss_items = $rss->get_items( 0, $maxitems );
+        $rss_items = $rss->get_items( $offsetitems, $maxitems );
         if ( $new_window != 'false' ) {
             $newWindowOutput = 'target="_blank" ';
         } else {
@@ -400,7 +402,10 @@ function wpp_rss_function( $atts, $content = null ){
                     foreach ( $rss_items as $item ) :
                         //variables
                         $content = $item->get_content();
-                        $the_title = $item->get_title();
+                        $messy_title = $item->get_title();
+                        $remove_tags = array('&lt;em&gt;', '&lt;/em&gt;', '&lt;i&gt;', '&lt;/i&gt;', '&lt;b&gt;', '&lt;/b&gt;', '&lt;strong&gt;', '&lt;/strong&gt;');
+                        $replace_tags = array('', '', '', '', '', '', '', '');
+                        $the_title = str_replace($remove_tags, $replace_tags, $messy_title);
                         $enclosure = $item->get_enclosure();
 
                         //build output
@@ -488,11 +493,6 @@ function wpp_rss_function( $atts, $content = null ){
                                     if ($date == 'true' && $time) {
                                         $output .= '<span class="post_item_date">' . sprintf( __( 'Published: %s', 'wpp-rss-retriever' ), $time ) . '</span>';
                                     }
-                                    if ($itemauthor == 'true') {
-                                        $author = $item->get_author();
-                                        $authorname = ' | ' . $author->get_name();
-                                        $output .= $authorname;
-                                    }
                                 $output .= '</div>';
                             }
 
@@ -502,7 +502,10 @@ function wpp_rss_function( $atts, $content = null ){
             $output .= '</ul>';
         $output .= '</div>';
     } elseif($type == 'emailfeat') {
-        $output = '<table border="0" cellpadding="0" cellspacing="0" class="columns-container">';
+        $linkcolor;
+        $btncolor;
+        
+        $output = '<table border="0" cellpadding="0" cellspacing="0" class="columns-container" style="margin-bottom: 30px;">';
                 if ( !isset($maxitems) ) : 
                     $output .= '<tr>' . _e( 'No items', 'wpp-rss-retriever' ) . '</tr>';
                 else : 
@@ -510,18 +513,21 @@ function wpp_rss_function( $atts, $content = null ){
                     foreach ( $rss_items as $item ) :
                         //variables
                         $content = $item->get_content();
-                        $the_title = $item->get_title();
+                        $messy_title = $item->get_title();
+                        $remove_tags = array('&lt;em&gt;', '&lt;/em&gt;', '&lt;i&gt;', '&lt;/i&gt;', '&lt;b&gt;', '&lt;/b&gt;', '&lt;strong&gt;', '&lt;/strong&gt;');
+                        $replace_tags = array('', '', '', '', '', '', '', '');
+                        $the_title = str_replace($remove_tags, $replace_tags, $messy_title);
                         $enclosure = $item->get_enclosure();
 
                         //build output
                         $output .= '<tr>';
 
                             //title
-                                $output .= '<td class="force-col" style="padding-right: 20px;" valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="left" class="featured"><tr><td align="left" valign="top" style="font-size:28px; line-height: 32px; font-family: Arial, sans-serif; padding-bottom: 30px;"><br>';
-                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style="font-weight:bold">' . $the_title . '</a>';
+                                $output .= '<td class="force-col" style="padding-right: 20px;" valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="left" class="featured"><tr><td align="left" valign="top" style="font-size:28px; line-height: 32px; font-family: Arial, sans-serif;">';
+                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style="font-weight:bold; color: ' . $linkcolor . '">' . $the_title . '</a>';
                                 $output .= '<br><br>';
-                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style=" line-height: 16px; font-size: 16px; font-style: italic; font-family: Arial, sans-serif; text-decoration: none; border: 2px solid; padding: 8px; border-radius: 3px;">Read this article</a>';
-                                $output .= '<br></td></tr></table></td>';
+                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style="width: 100%; line-height: 16px; font-size: 14px; font-style: normal; font-family: Arial, sans-serif; text-decoration: none; border: 2px solid; padding: 8px 15px; border-radius: 1px; border-color: ' . $btncolor . '; color: ' . $btncolor . '; font-weight: bold;">Read This</a>';
+                                $output .= '<br><br></td></tr></table></td>';
 
         
                             //thumbnail
@@ -531,16 +537,16 @@ function wpp_rss_function( $atts, $content = null ){
                                     //use thumbnail image if it exists
                                     $resize = wpp_rss_resize_thumbnail($thumbnail);
                                     $class = wpp_rss_get_image_class($thumbnail_image);
-                                    $output .= '<td class="force-col"  valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="right" class="featured" id="featured-last"><tr><td align="left" valign="top" style="font-size:13px; line-height: 20px; font-family: Arial, sans-serif;">';
-                                    $output .= '<a href="' . esc_url($item->get_permalink()) . '"><img src="' . $thumbnail_image . '" alt="' . $the_title . '" border="0" hspace="0" vspace="0" style="vertical-align:top; max-width: 324px;" class="emailimg"></a>';
-                                    $output .= '<br></td></tr></table></td>';
+                                    $output .= '<td class="force-col"  valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="right" class="featured" id="featured-last"><tr><td align="left" valign="top" style="font-size:13px; line-height: 20px; font-family: Arial, sans-serif; height: 200px !important; display: block; overflow: hidden;}">';
+                                    $output .= '<a href="' . esc_url($item->get_permalink()) . '"><img src="' . $thumbnail_image . '" alt="' . $the_title . '" border="0" hspace="0" vspace="0" style="vertical-align:top; max-width: 300px;" class="emailimg"></a>';
+                                    $output .= '<br><br></td></tr></table></td>';
                                 } else {
                                     //if not than find and use first image in content
                                     preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $content, $first_image);
                                     if ($first_image){    
                                         $resize = wpp_rss_resize_thumbnail($thumbnail);                                
                                         $class = wpp_rss_get_image_class($first_image["src"]);
-                                        $output .= '<td class="force-col"  valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="right" class="featured" id="featured-last"><tr><td align="left" valign="top" style="font-size:13px; line-height: 20px; font-family: Arial, sans-serif;">';
+                                        $output .= '<td class="force-col"  valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="right" class="featured" id="featured-last"><tr><td align="left" valign="top" style="font-size:13px; line-height: 20px; font-family: Arial, sans-serif; height: 200px !important; display: block; overflow: hidden;">';
                                     $output .= '<a href="' . esc_url($item->get_permalink()) . '"><img src="' . $first_image["src"] . '" alt="' . $the_title . '" border="0" hspace="0" vspace="0" style="vertical-align:top; max-width: 324px;" class="emailimg"></a>';
                                     $output .= '<br></td></tr></table></td>';
                                     }
@@ -559,16 +565,70 @@ function wpp_rss_function( $atts, $content = null ){
                     foreach ( $rss_items as $item ) :
                         //variables
                         $content = $item->get_content();
-                        $the_title = $item->get_title();
+                        $messy_title = $item->get_title();
+                        $remove_tags = array('&lt;em&gt;', '&lt;/em&gt;', '&lt;i&gt;', '&lt;/i&gt;', '&lt;b&gt;', '&lt;/b&gt;', '&lt;strong&gt;', '&lt;/strong&gt;');
+                        $replace_tags = array('', '', '', '', '', '', '', '');
+                        $the_title = str_replace($remove_tags, $replace_tags, $messy_title);
                         $enclosure = $item->get_enclosure();
+                        $linkcolor;
 
                         //build output
                         $output .= '<tr>';
 
                             //title
-                                $output .= '<td align="left" valign="top" style="font-size:22px; line-height: 26px; font-family: Arial, sans-serif; padding-bottom: 30px;">';
-                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style="font-weight:bold; font-size:22px; line-height: 26px; font-family: Arial, sans-serif;">' . $the_title . '</a><br>';
+                                $output .= '<td align="left" valign="top" style="font-size:22px; line-height: 26px; font-family: Arial, sans-serif; padding-bottom: 5px; display: block; margin-bottom: 20px; border-bottom: 1px solid ' . $btncolor . ';">';
+                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style="font-weight:bold; font-size:22px; line-height: 26px; font-family: Arial, sans-serif; color: ' . $linkcolor . ';">' . $the_title . '</a><br><a href="https://www.facebook.com/sharer/sharer.php?u=' . esc_url($item->get_permalink()) . '" style="margin-right: 5px;"><img src="/wp-content/uploads/2016/01/pt-fb-share.jpg" /></a><a href="https://twitter.com/home?status=' . esc_url($item->get_permalink()) . '"><img src="/wp-content/uploads/2016/01/pt-tw-share.jpg" /></a>';
                                 $output .= '</td>';
+                    endforeach;
+                endif;
+    } elseif($type == 'emailprod') {
+        $linkcolor;
+        $btncolor;
+
+                if ( !isset($maxitems) ) : 
+                    $output .= '<tr>' . _e( 'No items', 'wpp-rss-retriever' ) . '</tr>';
+                else : 
+                    //loop through each feed item and display each item.
+                    foreach ( $rss_items as $item ) :
+                        //variables
+                        $content = $item->get_content();
+                        $messy_title = $item->get_title();
+                        $remove_tags = array('&lt;em&gt;', '&lt;/em&gt;', '&lt;i&gt;', '&lt;/i&gt;', '&lt;b&gt;', '&lt;/b&gt;', '&lt;strong&gt;', '&lt;/strong&gt;');
+                        $replace_tags = array('', '', '', '', '', '', '', '');
+                        $the_title = str_replace($remove_tags, $replace_tags, $messy_title);
+                        $enclosure = $item->get_enclosure();
+
+                        //build output
+                        $output .= '<td class="force-col" style="padding-right: 20px;" valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="left" class="col-2"><tbody><tr><td align="left" valign="top" style="font-size:16px; line-height: 22px; font-family: Arial, sans-serif;"><br>';
+        
+                            //thumbnail
+                            if ($thumbnail != 'false' && $enclosure) {
+                                $thumbnail_image = $enclosure->get_thumbnail();                     
+                                if ($thumbnail_image) {
+                                    //use thumbnail image if it exists
+                                    $resize = wpp_rss_resize_thumbnail($thumbnail);
+                                    $class = wpp_rss_get_image_class($thumbnail_image);
+                                    $output .= '<a href="' . esc_url($item->get_permalink()) . '" style="font-weight:bold; font-size:20px;text-decoration:none; display: block !important; height: 200px !important;overflow: hidden;">';
+                                    $output .= '<img src="' . $thumbnail_image . '" alt="' . $the_title . '" border="0" hspace="0" vspace="0" style="vertical-align:top; padding-bottom:12px; max-width: 324px; width:300px;" class="emailimg" width="300"></a>';
+                                    $output .= '<br>';
+                                } else {
+                                    //if not than find and use first image in content
+                                    preg_match('/<img.+src=[\'"](?P<src>.*cdn1.+?)[\'"].*>/i', $content, $first_image);
+                                    if ($first_image){    
+                                        $resize = wpp_rss_resize_thumbnail($thumbnail);                                
+                                        $class = wpp_rss_get_image_class($first_image["src"]);
+                                        $output .= '<a href="' . esc_url($item->get_permalink()) . '" style="font-weight:bold; font-size:20px;text-decoration:none;display: block !important; height: 200px !important;overflow: hidden;">';
+                                    $output .= '<img src="' . $first_image["src"] . '" alt="' . $the_title . '" border="0" hspace="0" vspace="0" style="vertical-align:top; padding-bottom:12px; max-width: 324px; width:300px;" class="emailimg" width="300"></a>';
+                                    $output .= '<br>';
+                                    }
+                                }
+                            }
+
+                            //title
+                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style="font-weight:bold; color: ' . $linkcolor . '">' . $the_title . '</a><br><br>';
+                                $output .= '<a href="' . esc_url($item->get_permalink()) . '" style="width: 100%; line-height: 16px; font-size: 14px; font-style: normal; font-family: Arial, sans-serif; text-decoration: none; border: 2px solid; padding: 8px 15px; border-radius: 1px; border-color: ' . $btncolor . '; color: ' . $btncolor . '; font-weight: bold;">Buy Now</a>';
+
+                        $output .= '<br><br></td></tr></tbody></table></td>';
                     endforeach;
                 endif;
     }
