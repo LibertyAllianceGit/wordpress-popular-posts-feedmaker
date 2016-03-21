@@ -26,6 +26,9 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.7.3
+* Add Update Shortcode for use with Email Templates
+
 = 1.7.2
 * Add enclosure length tag for valid RSS feed.
 
