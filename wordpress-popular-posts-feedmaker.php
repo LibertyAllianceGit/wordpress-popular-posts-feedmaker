@@ -3,7 +3,7 @@
 Plugin Name: WordPress Popular Posts Feedmaker
 Plugin URI: http://wpdevelopers.com
 Description: Creates a popular feed at /feed/popular, which uses WordPress Popular Posts
-Version: 1.7.3
+Version: 1.7.4
 Author: Ted Slater & Tyler Johnson
 Author URI: http://libertyalliance.com
 Author Email: tyler@libertyalliance.com
@@ -18,8 +18,9 @@ Copyright 2016 WP Developers & Liberty Alliance
 Check for Plugin Updates
 **********/
 
-require 'plugin-update-checker-2.2/plugin-update-checker.php';
+require 'plugin-update-checker-3.0/plugin-update-checker.php';
 $className = PucFactory::getLatestClassVersion('PucGitHubChecker');
+$myUpdateChecker->setAccessToken('4921ce230f2bd252dd1fafc7afeac812ddf091de');
 $myUpdateChecker = new $className(
     'https://github.com/LibertyAllianceGit/wordpress-popular-posts-feedmaker',
     __FILE__,
