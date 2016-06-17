@@ -19,13 +19,13 @@ Check for Plugin Updates
 **********/
 
 require 'plugin-update-checker-3.0/plugin-update-checker.php';
-$className = PucFactory::getLatestClassVersion('PucGitHubChecker');
-$myUpdateChecker->setAccessToken('4921ce230f2bd252dd1fafc7afeac812ddf091de');
-$myUpdateChecker = new $className(
+$wpdevClassName = PucFactory::getLatestClassVersion('PucGitHubChecker');
+$wpdevUpdateChecker = new $wpdevClassName(
     'https://github.com/LibertyAllianceGit/wordpress-popular-posts-feedmaker',
     __FILE__,
     'master'
 );
+$wpdevUpdateChecker->setAccessToken('4921ce230f2bd252dd1fafc7afeac812ddf091de');
 
 
 /**********
@@ -57,16 +57,16 @@ add_image_size( 'patriottimes-email', 330, 175, true );
 // Fix Cropping for Small Images
 function wpdev_thumbnail_crop_fix_pt( $default, $orig_w, $orig_h, $new_w, $new_h, $crop ){
     if ( !$crop ) return null; // let the wordpress default function handle this
- 
+
     $aspect_ratio = $orig_w / $orig_h;
     $size_ratio = max($new_w / $orig_w, $new_h / $orig_h);
- 
+
     $crop_w = round($new_w / $size_ratio);
     $crop_h = round($new_h / $size_ratio);
- 
+
     $s_x = floor( ($orig_w - $crop_w) / 2 );
     $s_y = floor( ($orig_h - $crop_h) / 2 );
- 
+
     return array( 0, 0, (int) $s_x, (int) $s_y, (int) $new_w, (int) $new_h, (int) $crop_w, (int) $crop_h );
 }
 add_filter( 'image_resize_dimensions', 'wpdev_thumbnail_crop_fix_pt', 10, 6 );
@@ -88,63 +88,63 @@ add_action('admin_enqueue_scripts', 'wpp_rss_plugin_css', 20);
 add_action( 'admin_menu', 'wpprss_add_admin_menu' );
 add_action( 'admin_init', 'wpprss_settings_init' );
 
-function wpprss_add_admin_menu() { 
-	add_submenu_page( 
-        'options-general.php', 
-        'WordPress Popular Posts Feedmaker', 
-        'WordPress Popular Posts Feedmaker', 
-        'manage_options', 
-        'wpprss', 
-        'wpprss_options_page' 
+function wpprss_add_admin_menu() {
+	add_submenu_page(
+        'options-general.php',
+        'WordPress Popular Posts Feedmaker',
+        'WordPress Popular Posts Feedmaker',
+        'manage_options',
+        'wpprss',
+        'wpprss_options_page'
     );
 }
 
 
-function wpprss_settings_init() { 
+function wpprss_settings_init() {
 	register_setting( 'wppFeedPage', 'wpprss_settings' );
 
 	add_settings_section(
-		'wpprss_wppFeedPage_section', 
-		__( 'RSS Feed Options', 'wpprss' ), 
-		'wpprss_settings_section_callback', 
+		'wpprss_wppFeedPage_section',
+		__( 'RSS Feed Options', 'wpprss' ),
+		'wpprss_settings_section_callback',
 		'wppFeedPage'
 	);
 
-	add_settings_field( 
-		'wpprss_text_limit_field', 
-		__( '<span>Limit</span><p>Sets the maximum number of popular posts to be shown in the RSS feed.</p>', 'wpprss' ), 
-		'wpprss_text_limit_field_render', 
-		'wppFeedPage', 
-		'wpprss_wppFeedPage_section' 
+	add_settings_field(
+		'wpprss_text_limit_field',
+		__( '<span>Limit</span><p>Sets the maximum number of popular posts to be shown in the RSS feed.</p>', 'wpprss' ),
+		'wpprss_text_limit_field_render',
+		'wppFeedPage',
+		'wpprss_wppFeedPage_section'
 	);
 
-	add_settings_field( 
-		'wpprss_select_range_field', 
-		__( '<span>Range</span><p>Tells WordPress Popular Posts to retrieve the most popular entries within the time range specified for the RSS feed.</p>', 'wpprss' ), 
-		'wpprss_select_range_field_render', 
-		'wppFeedPage', 
-		'wpprss_wppFeedPage_section' 
+	add_settings_field(
+		'wpprss_select_range_field',
+		__( '<span>Range</span><p>Tells WordPress Popular Posts to retrieve the most popular entries within the time range specified for the RSS feed.</p>', 'wpprss' ),
+		'wpprss_select_range_field_render',
+		'wppFeedPage',
+		'wpprss_wppFeedPage_section'
 	);
 
-	add_settings_field( 
-		'wpprss_select_freshness_field', 
-		__( '<span>Freshness</span><p>Tells WordPress Popular Posts to retrieve the most popular entries published within the time range specified above.</p>', 'wpprss' ), 
-		'wpprss_select_freshness_field_render', 
-		'wppFeedPage', 
-		'wpprss_wppFeedPage_section' 
+	add_settings_field(
+		'wpprss_select_freshness_field',
+		__( '<span>Freshness</span><p>Tells WordPress Popular Posts to retrieve the most popular entries published within the time range specified above.</p>', 'wpprss' ),
+		'wpprss_select_freshness_field_render',
+		'wppFeedPage',
+		'wpprss_wppFeedPage_section'
 	);
 
-	add_settings_field( 
-		'wpprss_select_orderby_field', 
-		__( '<span>Order By</span><p>Sets the sorting option of the popular posts with the RSS feed.</p>', 'wpprss' ), 
-		'wpprss_select_orderby_field_render', 
-		'wppFeedPage', 
-		'wpprss_wppFeedPage_section' 
+	add_settings_field(
+		'wpprss_select_orderby_field',
+		__( '<span>Order By</span><p>Sets the sorting option of the popular posts with the RSS feed.</p>', 'wpprss' ),
+		'wpprss_select_orderby_field_render',
+		'wppFeedPage',
+		'wpprss_wppFeedPage_section'
 	);
 }
 
 
-function wpprss_text_limit_field_render() { 
+function wpprss_text_limit_field_render() {
 	$options = get_option( 'wpprss_settings' );
 	?>
 	<input type='text' name='wpprss_settings[wpprss_text_limit_field]' value='<?php echo $options['wpprss_text_limit_field']; ?>' placeholder="10">
@@ -152,7 +152,7 @@ function wpprss_text_limit_field_render() {
 }
 
 
-function wpprss_select_range_field_render() { 
+function wpprss_select_range_field_render() {
 	$options = get_option( 'wpprss_settings' );
 	?>
 	<select name='wpprss_settings[wpprss_select_range_field]'>
@@ -165,7 +165,7 @@ function wpprss_select_range_field_render() {
 }
 
 
-function wpprss_select_freshness_field_render() { 
+function wpprss_select_freshness_field_render() {
 	$options = get_option( 'wpprss_settings' );
 	?>
 	<select name='wpprss_settings[wpprss_select_freshness_field]'>
@@ -176,7 +176,7 @@ function wpprss_select_freshness_field_render() {
 }
 
 
-function wpprss_select_orderby_field_render() { 
+function wpprss_select_orderby_field_render() {
 	$options = get_option( 'wpprss_settings' );
 	?>
 	<select name='wpprss_settings[wpprss_select_orderby_field]'>
@@ -188,17 +188,17 @@ function wpprss_select_orderby_field_render() {
 }
 
 
-function wpprss_settings_section_callback() { 
+function wpprss_settings_section_callback() {
 	echo __( 'Settings for the most popular posts output within the custom RSS feed located at: ', 'wpprss' );
     echo '<a href="' . get_bloginfo('url') . '/feed/popular/" target="_blank">' . get_bloginfo('url') . '/feed/popular/' . '</a>. If feed displays 404, please save permalinks to refresh the link structure. You can refresh permalinks <a href="' . get_bloginfo('url') . '/wp-admin/options-permalink.php" target="_blank">HERE</a>.';
 }
 
-function wpprss_options_page() { 
+function wpprss_options_page() {
 	?>
 <div class="wpp-rss-admin-page">
 	<form action='options.php' method='post'>
 		<h2><img src="<?php echo plugin_dir_url(__FILE__) . 'admin/wpp-rss-logo.png'; ?>" /></h2>
-		
+
 		<?php
 		settings_fields( 'wppFeedPage' );
 		do_settings_sections( 'wppFeedPage' );
@@ -255,7 +255,7 @@ $wpprssorderby      = $wpprssoptions['wpprss_select_orderby_field'];
 
 
 /**********
-Setup RSS Feed 
+Setup RSS Feed
 **********/
 
 // Create RSS
@@ -298,7 +298,7 @@ function wpdev_wpp_rss_get_excerpt_by_id($post_id){
 function wpdev_wpp_rss_custom_html( $mostpopular, $instance ){
         // loop the array of popular posts objects
         foreach( $mostpopular as $popular ) {
-            
+
             $title = esc_attr( $popular->title );
             $link = get_the_permalink( $popular->id );
             $date = get_the_date( 'r', $popular->id );
@@ -318,11 +318,11 @@ function wpdev_wpp_rss_custom_html( $mostpopular, $instance ){
             $output .= '<guid isPermaLink=\'true\'>' . $link . '</guid>';
             $output .= '<description><![CDATA[<img src="' . $imagereplace . '" />' . $wppexcerpt . ']]></description>';
             $output .= '<content:encoded><![CDATA[<img src="' . $imagereplace . '" />' . $wppexcerpt . ']]></content:encoded>';
-            $output .= '</item>';  
-            
+            $output .= '</item>';
+
             //Wed, 02 Oct 2002 08:00:00 EST
 
-        } 
+        }
         return $output;
 }
 
@@ -368,7 +368,7 @@ function wpp_rss_function( $atts, $content = null ){
     $urls = explode(',', $url);
 
     add_filter( 'wp_feed_cache_transient_lifetime', 'wpp_rss_cache' );
-    
+
     $rss = fetch_feed( $urls );
 
     remove_filter( 'wp_feed_cache_transient_lifetime', 'wpp_rss_cache' );
@@ -378,7 +378,7 @@ function wpp_rss_function( $atts, $content = null ){
         if ($orderby == 'date' || $orderby == 'date_reverse') {
             $rss->enable_order_by_date(true);
         }
-        $maxitems = $rss->get_item_quantity( $items ); 
+        $maxitems = $rss->get_item_quantity( $items );
         $rss_items = $rss->get_items( $offsetitems, $maxitems );
         if ( $new_window != 'false' ) {
             $newWindowOutput = 'target="_blank" ';
@@ -391,14 +391,14 @@ function wpp_rss_function( $atts, $content = null ){
         }
 
     endif;
-    
+
     // Shortcode Output
     if($type == 'reg') {
         $output = '<div class="post_item">';
             $output .= '<ul class="post_item_list">';
-                if ( !isset($maxitems) ) : 
+                if ( !isset($maxitems) ) :
                     $output .= '<li>' . _e( 'No items', 'wpp-rss-retriever' ) . '</li>';
-                else : 
+                else :
                     //loop through each feed item and display each item.
                     foreach ( $rss_items as $item ) :
                         //variables
@@ -420,7 +420,7 @@ function wpp_rss_function( $atts, $content = null ){
 
 
                             if ($randomthumbnail != 'false' && $enclosure && in_array($postcount, $arraynums)) {
-                                $thumbnail_image = $enclosure->get_thumbnail();                     
+                                $thumbnail_image = $enclosure->get_thumbnail();
                                 if ($thumbnail_image) {
                                     //use thumbnail image if it exists
                                     $resize = wpp_rss_resize_thumbnail($thumbnail);
@@ -429,8 +429,8 @@ function wpp_rss_function( $atts, $content = null ){
                                 } else {
                                     //if not than find and use first image in content
                                     preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $content, $first_image);
-                                    if ($first_image){    
-                                        $resize = wpp_rss_resize_thumbnail($thumbnail);                                
+                                    if ($first_image){
+                                        $resize = wpp_rss_resize_thumbnail($thumbnail);
                                         $class = wpp_rss_get_image_class($first_image["src"]);
                                         $output .= '<div class="post_item_image"' . $resize . '><a ' . $newWindowOutput . ' href="' . esc_url( $item->get_permalink() ) . '"><img' . $class . ' src="' . $first_image["src"] . '" alt="' . $title . '"></a></div>';
                                     }
@@ -445,11 +445,11 @@ function wpp_rss_function( $atts, $content = null ){
                                 $output .= '<a class="post_item_title ' . $hasrandthumbnail . '" ' . $newWindowOutput . 'href="' . esc_url( $item->get_permalink() ) . '"
                                     title="' . $the_title . '"><h1>';
                                     $output .= $the_title;
-                                $output .= '</h1></a>';   
+                                $output .= '</h1></a>';
                             }
                             //thumbnail
                             if ($thumbnail != 'false' && $enclosure) {
-                                $thumbnail_image = $enclosure->get_thumbnail();                     
+                                $thumbnail_image = $enclosure->get_thumbnail();
                                 if ($thumbnail_image) {
                                     //use thumbnail image if it exists
                                     $resize = wpp_rss_resize_thumbnail($thumbnail);
@@ -458,8 +458,8 @@ function wpp_rss_function( $atts, $content = null ){
                                 } else {
                                     //if not than find and use first image in content
                                     preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $content, $first_image);
-                                    if ($first_image){    
-                                        $resize = wpp_rss_resize_thumbnail($thumbnail);                                
+                                    if ($first_image){
+                                        $resize = wpp_rss_resize_thumbnail($thumbnail);
                                         $class = wpp_rss_get_image_class($first_image["src"]);
                                         $output .= '<div class="post_item_image"' . $resize . '><a ' . $newWindowOutput . ' href="' . esc_url( $item->get_permalink() ) . '"><img' . $class . ' src="' . $first_image["src"] . '" alt="' . $title . '"></a></div>';
                                     }
@@ -505,11 +505,11 @@ function wpp_rss_function( $atts, $content = null ){
     } elseif($type == 'emailfeat') {
         $linkcolor;
         $btncolor;
-        
+
         $output = '<table border="0" cellpadding="0" cellspacing="0" class="columns-container" style="margin-bottom: 30px;">';
-                if ( !isset($maxitems) ) : 
+                if ( !isset($maxitems) ) :
                     $output .= '<tr>' . _e( 'No items', 'wpp-rss-retriever' ) . '</tr>';
-                else : 
+                else :
                     //loop through each feed item and display each item.
                     foreach ( $rss_items as $item ) :
                         //variables
@@ -530,10 +530,10 @@ function wpp_rss_function( $atts, $content = null ){
                                 $output .= '<a href="' . esc_url($item->get_permalink()) . '" title="' . $the_title . '" style="width: 100%; line-height: 16px; font-size: 14px; font-style: normal; font-family: Arial, sans-serif; text-decoration: none; border: 2px solid; padding: 8px 15px; border-radius: 1px; border-color: ' . $btncolor . '; color: ' . $btncolor . '; font-weight: bold;">Read This</a>';
                                 $output .= '<br><br></td></tr></table></td>';
 
-        
+
                             //thumbnail
                             if ($thumbnail != 'false' && $enclosure) {
-                                $thumbnail_image = $enclosure->get_thumbnail();                     
+                                $thumbnail_image = $enclosure->get_thumbnail();
                                 if ($thumbnail_image) {
                                     //use thumbnail image if it exists
                                     $resize = wpp_rss_resize_thumbnail($thumbnail);
@@ -544,8 +544,8 @@ function wpp_rss_function( $atts, $content = null ){
                                 } else {
                                     //if not than find and use first image in content
                                     preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $content, $first_image);
-                                    if ($first_image){    
-                                        $resize = wpp_rss_resize_thumbnail($thumbnail);                                
+                                    if ($first_image){
+                                        $resize = wpp_rss_resize_thumbnail($thumbnail);
                                         $class = wpp_rss_get_image_class($first_image["src"]);
                                         $output .= '<td class="force-col"  valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="right" class="featured" id="featured-last"><tr><td align="left" valign="top" style="font-size:13px; line-height: 20px; font-family: Arial, sans-serif; height: 200px !important; display: block; overflow: hidden;">';
                                     $output .= '<a href="' . esc_url($item->get_permalink()) . '"><img src="' . $first_image["src"] . '" alt="' . $the_title . '" border="0" hspace="0" vspace="0" style="vertical-align:top; max-width: 324px;" class="emailimg"></a>';
@@ -559,9 +559,9 @@ function wpp_rss_function( $atts, $content = null ){
                 endif;
         $output .= '</table>';
     } elseif($type == 'email') {
-                if ( !isset($maxitems) ) : 
+                if ( !isset($maxitems) ) :
                     $output .= '<tr>' . _e( 'No items', 'wpp-rss-retriever' ) . '</tr>';
-                else : 
+                else :
                     //loop through each feed item and display each item.
                     foreach ( $rss_items as $item ) :
                         //variables
@@ -586,9 +586,9 @@ function wpp_rss_function( $atts, $content = null ){
         $linkcolor;
         $btncolor;
 
-                if ( !isset($maxitems) ) : 
+                if ( !isset($maxitems) ) :
                     $output .= '<tr>' . _e( 'No items', 'wpp-rss-retriever' ) . '</tr>';
-                else : 
+                else :
                     //loop through each feed item and display each item.
                     foreach ( $rss_items as $item ) :
                         //variables
@@ -601,10 +601,10 @@ function wpp_rss_function( $atts, $content = null ){
 
                         //build output
                         $output .= '<td class="force-col" style="padding-right: 20px;" valign="top"><table border="0" cellspacing="0" cellpadding="0" width="324" align="left" class="col-2"><tbody><tr><td align="left" valign="top" style="font-size:16px; line-height: 22px; font-family: Arial, sans-serif;"><br>';
-        
+
                             //thumbnail
                             if ($thumbnail != 'false' && $enclosure) {
-                                $thumbnail_image = $enclosure->get_thumbnail();                     
+                                $thumbnail_image = $enclosure->get_thumbnail();
                                 if ($thumbnail_image) {
                                     //use thumbnail image if it exists
                                     $resize = wpp_rss_resize_thumbnail($thumbnail);
@@ -615,8 +615,8 @@ function wpp_rss_function( $atts, $content = null ){
                                 } else {
                                     //if not than find and use first image in content
                                     preg_match('/<img.+src=[\'"](?P<src>.*cdn1.+?)[\'"].*>/i', $content, $first_image);
-                                    if ($first_image){    
-                                        $resize = wpp_rss_resize_thumbnail($thumbnail);                                
+                                    if ($first_image){
+                                        $resize = wpp_rss_resize_thumbnail($thumbnail);
                                         $class = wpp_rss_get_image_class($first_image["src"]);
                                         $output .= '<a href="' . esc_url($item->get_permalink()) . '" style="font-weight:bold; font-size:20px;text-decoration:none;display: block !important; height: 200px !important;overflow: hidden;">';
                                     $output .= '<img src="' . $first_image["src"] . '" alt="' . $the_title . '" border="0" hspace="0" vspace="0" style="vertical-align:top; padding-bottom:12px; max-width: 324px; width:300px;" class="emailimg" width="300"></a>';
