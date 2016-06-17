@@ -26,6 +26,9 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.7.4
+* Add Access Token.
+
 = 1.7.3
 * Add Update Shortcode for use with Email Templates
 
