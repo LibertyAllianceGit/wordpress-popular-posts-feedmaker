@@ -26,6 +26,9 @@ Creates a custom RSS feed to be used with WordPress Popular Posts.
 
 == Changelog ==
 
+= 1.7.6
+* Bug fix.
+
 = 1.7.5
 * PHP7 compatibility fix.
 
